@@ -2,7 +2,7 @@
 //
 // life.js
 // Simple JavaScript implementation of Conway's game of Life
-// Copyright (c) 2016 Bill St. Clair
+// Copyright (c) 2016 Bill St. Clair <bill@billstclair.com>
 // MIT License
 //
 //////////////////////////////////////////////////////////////////////
