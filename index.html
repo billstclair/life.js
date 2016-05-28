@@ -6,15 +6,33 @@
 
   <script>
 
+var count = 0;
+var counterRunning = false;
+
+var last = null;
+var lastlast = null;
+
 function start() {
   var board = $('#board')[0];
   life.init(board);
+  life.eventCallback(boardChanged);
   glider();
 }
 
 function update() {
+  lastlast = last;
+  last = life.copyBoard();
   life.generation();
   life.draw();
+  if (counterRunning) {
+    if (life.areBoardsEqual(last) ||
+        life.areBoardsEqual(lastlast)) {
+      counterRunning = false;
+    } else {
+      counter++;
+      $('#counter').text(counter);
+    }
+  }
 }
 
 var intervalID = null;
@@ -31,9 +49,23 @@ function run() {
   }
 }
 
+var startBoard = null;
+
+function startCounter() {
+  counter = 0;
+  counterRunning = true;
+  startBoard = life.copyBoard();
+  $('#counter').text(counter);
+}
+
+function boardChanged() {
+  startCounter();
+}
+
 function glider() {
   life.addGlider();
   life.draw();
+  startCounter();
 }
   </script>
 </head>
@@ -45,6 +77,7 @@ function glider() {
 <input type='submit' onClick='life.clear()' value='Clear'/>
 <input type='submit' onClick='glider()' value='Glider'/>
 <input type='submit' id='run' onClick='run()' value='Run'/>
+<span id='counter'></span>
 <br/>
 <br/>
 <a href='https://github.com/billstclair/life.js'>Source on GitHub</a>

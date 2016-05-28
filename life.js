@@ -14,7 +14,10 @@ function Life() {
   // Exported functions
   self.init = init;
   self.getBoard = getBoard;
+  self.copyBoard = copyBoard;
+  self.areBoardsEqual = areBoardsEqual;
   self.addGlider = addGlider;
+  self.eventCallback = eventCallback;
   self.draw = draw;
   self.generation = generation;
   self.clear = clear;
@@ -40,6 +43,16 @@ function Life() {
     document.addEventListener('touchstart', listener);
   }
 
+  var eventCallback = null;
+
+  function eventCallback(newCallback) {
+    if (newCallback === undefined) {
+      return eventCallback;
+    } else {
+      eventCallback = newCallback;
+    }
+  }
+
   function listener(e) {
     var pos = eventPos(e)
     if (!pos) return;
@@ -57,6 +70,7 @@ function Life() {
       row[j] = cell==0 ? 1 : 0;
 
       draw();
+      if (eventCallback) eventCallback(i, j);
     }
   }
 
@@ -112,6 +126,32 @@ function Life() {
 
   function getBoard() {
     return board;
+  }
+
+  function copyBoard(fromBoard) {
+    if (fromBoard === undefined) fromBoard = board;
+    var res = makeBoard();
+    for (var i=0; i<size; i++) {
+      var fromRow = fromBoard[i];
+      var row = res[i];
+      for (var j=0; j<size; j++) {
+        row[j] = fromRow[j];
+      }
+    }
+    return res;
+  }
+
+  function areBoardsEqual(b1, b2) {
+    if (b2 === undefined) b2 = board;
+    if (!(b1 && b2)) return false;
+    for (i=0; i<size; i++) {
+      var r1 = b1[i];
+      var r2 = b2[i];
+      for (j=0; j<size; j++) {
+        if (r1[j] != r2[j]) return false;
+      }
+    }
+    return true;
   }
 
   function draw() {
