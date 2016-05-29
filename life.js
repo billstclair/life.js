@@ -15,12 +15,17 @@ function Life() {
   self.init = init;
   self.getBoard = getBoard;
   self.copyBoard = copyBoard;
+  self.getSize = getSize;
   self.areBoardsEqual = areBoardsEqual;
+  self.liveCells = liveCells;
   self.addGlider = addGlider;
   self.eventCallback = eventCallback;
   self.draw = draw;
   self.generation = generation;
   self.clear = clear;
+  self.installBoard = installBoard;
+  self.saveBoard = saveBoard;
+  self.restoreBoard = restoreBoard;
 
   var canvas;
   var ctx;
@@ -112,11 +117,41 @@ function Life() {
     draw();
   }
 
-  function makeBoard() {
-    var board = new Array(size);
+  function err(text) {
+    throw new Error(text);
+  }
+
+  function installBoard(b) {
+    if (!Array.isArray(b)) err("installBoard: not an array");
+    var len = b.length;
+
+    for (var i=0; i<len; i++) {
+      var row = b[i];
+      if (!Array.isArray(row)) err("installBoard: row not an array");
+      if (len != row.length) err("installBoard: bad row length");
+    }
+
+    if (len != size) {
+      size = len;
+      board = makeBoard();
+    }
+
     for (var i=0; i<size; i++) {
-      var row = new Array(size);
+      var row = board[i];
+      var brow = b[i];
       for (var j=0; j<size; j++) {
+        row[j] = brow[j];
+      }
+    }
+    draw();
+  }
+
+  function makeBoard(sz) {
+    if (sz === undefined) sz = size;
+    var board = new Array(sz);
+    for (var i=0; i<sz; i++) {
+      var row = new Array(sz);
+      for (var j=0; j<sz; j++) {
         row[j] = 0
       }
       board[i] = row;
@@ -141,6 +176,22 @@ function Life() {
     return res;
   }
 
+  function getSize() {
+    return size;
+  }
+
+  function liveCells(b) {
+    if (b == undefined) b = board;
+    var res = 0;
+    for (var i=0; i<size; i++) {
+      var row = b[i];
+      for (var j=0; j<size; j++) {
+        if (row[j]) res++;
+      }
+    }
+    return res;
+  }
+
   function areBoardsEqual(b1, b2) {
     if (b2 === undefined) b2 = board;
     if (!(b1 && b2)) return false;
@@ -152,6 +203,67 @@ function Life() {
       }
     }
     return true;
+  }
+
+  function saveBoard(b) {
+    if (b === undefined) b = board;
+    var res = "";
+    var restail = "";
+    for (var i=0; i<size; i++) {
+      var row = b[i];
+      var txt = "";
+      var tail = "";
+      for (var j=0; j<size; j++) {
+        if (row[j]) {
+          txt = txt + tail + "O";
+          tail = "";
+        } else {
+          if (i == 0) {
+            txt += ".";
+          } else {
+            tail += ".";
+          }
+        }
+      }
+      if (i != 0) restail += "\n";
+      if (txt == "") {
+        if (txt == "") txt = ".";
+        restail += txt;
+      } else {
+        res += restail + txt;
+        restail = "";
+      }
+    }
+    return res;
+  }
+
+  function restoreBoard(str) {
+    var sz = str.indexOf("\n");
+    if (sz == -1) sz = str.length;
+    if (sz <= 1) err('restoreBoard: size too small: ' + sz);
+    if (sz > 200) err('restoreBoard: size too big: ' + sz);
+    var b = makeBoard(sz);
+    var strlen = str.length;
+    var minlen = sz*(sz+1) - 1;
+    var idx = 0;
+    for (var i=0; i<sz; i++) {
+      var row = b[i];
+      for (var j=0; j<sz; j++) {
+        if (idx >= strlen) break;
+        var ch = str[idx++];
+        if (ch == "\n") {
+          idx--;
+          break;
+        }
+        if ((ch != ".") && (ch != " ")) row[j] = 1;
+      }
+      if (idx >= strlen) break;
+      if (idx < minlen) {
+        var ch = str[idx++];
+        if (ch != "\n") err("restoreBoard: missing newline at end of row");
+      }
+    }
+    return b;
   }
 
   function draw() {
