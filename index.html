@@ -142,19 +142,24 @@ function restore() {
 
 <body onload='start();'>
 <canvas id='board' width='600' height='600' tabindex='1'></canvas>
-<br/>
 <p>
-<input type='submit' onClick='update()' value='Update'/>
-<input type='submit' onClick='life.clear()' value='Clear'/>
-<input type='submit' onClick='glider()' value='Glider'/>
-<input type='submit' id='run' onClick='run()' value='Run'/>
+<input type='submit' onClick='update()' value='Update'
+       title='Advance by one generation.'/>
+<input type='submit' onClick='life.clear()' value='Clear'
+       title='Clear the board.'/>
+<input type='submit' onClick='glider()' value='Glider'
+       title='Add a glider in the top-left corner.'/>
+<input type='submit' id='run' onClick='run()' value='Run'
+       title='Run at 1/10 second per generation.'/>
 </p>
+Click on board above to toggle cell.<br/>
+Hover mouse over anything clickable for description.
 <table style='text-align: right;'>
   <tr>
     <th>counter:</th>
     <td>
       <a href='#'
-         title='Restart current sequence'
+         title='Restart current sequence.'
          onclick='restartCounter()'>
         <span id='counter'></span>
       </a>
@@ -166,7 +171,7 @@ function restore() {
     <th>counter max:</th>
     <td>
       <a href='#'
-         title='Restore longest-lived sequence'
+         title='Restore longest-lived sequence.'
          onclick='restoreCounterMax()'>
         <span id='counterMax'></span>
       </a>
@@ -175,7 +180,7 @@ function restore() {
     <th>live cells max:</th>
     <td>
       <a href='#'
-         title='Restore highest population sequence'
+         title='Restore highest population sequence.'
          onclick='restoreLiveCellsMax()'>
         <span id='liveCellsMax'></span>
       </a>
@@ -183,8 +188,11 @@ function restore() {
   </tr>
 </table>
 
-<input type='submit' onClick='save()' value='Save'/>
-<input type='submit' onClick='restore()' value='Restore'/>
+<input type='submit' onClick='save()' value='Save'
+       title='Save board into area below.'/>
+<input type='submit' onClick='restore()' value='Restore'
+       title='Restore board from area below.
+First row length is size.'/>
 <br/>
 <textarea id='save' rows='50' cols='50' style='font-family: Monospace'></textarea>
 <br/>
